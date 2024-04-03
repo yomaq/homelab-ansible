@@ -1,0 +1,65 @@
+---
+- name: Define tasks to disable
+  set_fact:
+      tasks_to_disable:
+        - name: "OfficeTelemetryAgentLogOn"
+          path: "Microsoft\\Office"
+        - name: "OfficeTelemetryAgentFallBack"
+          path: "Microsoft\\Office"
+        - name: "Office 15 Subscription Heartbeat"
+          path: "Microsoft\\Office"
+        - name: "Microsoft Compatibility Appraiser"
+          path: "Microsoft\\Windows\\Application Experience"
+        - name: "ProgramDataUpdater"
+          path: "Microsoft\\Windows\\Application Experience"
+        - name: "StartupAppTask"
+          path: "Microsoft\\Windows\\Application Experience"
+        - name: "Proxy"
+          path: "Microsoft\\Windows\\Autochk"
+        - name: "Consolidator"
+          path: "Microsoft\\Windows\\Customer Experience Improvement Program"
+        - name: "KernelCeipTask"
+          path: "Microsoft\\Windows\\Customer Experience Improvement Program"
+        - name: "Uploader"
+          path: "Microsoft\\Windows\\Customer Experience Improvement Program"
+        - name: "UsbCeip"
+          path: "Microsoft\\Windows\\Customer Experience Improvement Program"
+        - name: "Microsoft-Windows-DiskDiagnosticDataCollector"
+          path: "Microsoft\\Windows\\DiskDiagnostic"
+        - name: "Notifications"
+          path: "Microsoft\\Windows\\Location"
+        - name: "WindowsActionDialog"
+          path: "Microsoft\\Windows\\Location"
+        - name: "MapsToastTask"
+          path: "Microsoft\\Windows\\Maps"
+        - name: "MapsUpdateTask"
+          path: "Microsoft\\Windows\\Maps"
+        - name: "MNO Metadata Parser"
+          path: "Microsoft\\Windows\\Mobile Broadband Accounts"
+        - name: "AnalyzeSystem"
+          path: "Microsoft\\Windows\\Power Efficiency Diagnostics"
+        - name: "CleanupOfflineContent"
+          path: "Microsoft\\Windows\\Retail Demo"
+        - name: "FamilySafetyMonitor"
+          path: "Microsoft\\Windows\\Shell"
+        - name: "FamilySafetyRefreshTask"
+          path: "Microsoft\\Windows\\Shell"
+        - name: "FamilySafetyUpload"
+          path: "Microsoft\\Windows\\Shell"
+        - name: "UpdateLibrary"
+          path: "Microsoft\\Windows\\Windows Media Sharing"
+
+- name: Check if tasks exist and disable if they do
+  community.windows.win_scheduled_task_stat:
+        name: "{{ item.name }}"
+        path: "{{ item.path }}"
+  register: task_stat
+  loop: "{{ tasks_to_disable }}"
+
+- name: Disable tasks if they exist
+  community.windows.win_scheduled_task:
+        name: "{{ item.item.name }}"
+        path: "{{ item.item.path }}"
+        enabled: no
+  loop: "{{ task_stat.results }}"
+  when: item.task_exists

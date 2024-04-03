@@ -1,0 +1,180 @@
+---
+- name: Remove default Windows apps
+# Run "Get-AppxPackage -AllUsers | Select Name, PackageFullName" to get a list of installed apps
+  ansible.windows.win_package:
+    provider: msix
+    product_id: "{{ item }}"
+    state: absent
+  loop:
+    - "MicrosoftCorporationII.QuickAssist"
+    - "Clipchamp.Clipchamp"
+    - "Microsoft.549981C3F5F10"   # Cortana
+    - "Microsoft.3DBuilder"
+    - "Microsoft.Appconnector"
+    - "Microsoft.BingFinance"
+    - "Microsoft.BingNews"
+    - "Microsoft.BingSports"
+    - "Microsoft.BingTranslator"
+    - "Microsoft.BingWeather"
+    - "Microsoft.FreshPaint"
+    - "Microsoft.GamingServices"
+    - "Microsoft.Microsoft3DViewer"
+    - "Microsoft.MicrosoftOfficeHub"
+    - "Microsoft.MicrosoftPowerBIForWindows"
+    - "Microsoft.MicrosoftSolitaireCollection"
+    - "Microsoft.MicrosoftStickyNotes"
+    # - "Microsoft.MinecraftUWP"
+    - "Microsoft.MSPaint"
+    - "Microsoft.Paint"
+    - "Microsoft.NetworkSpeedTest"
+    - "Microsoft.Office.OneNote"
+    - "Microsoft.People"
+    - "Microsoft.Print3D"
+    - "Microsoft.Services.Store.Engagement"
+    - "Microsoft.SkypeApp"
+    - "Microsoft.StorePurchaseApp"
+    - "Microsoft.Wallet"
+    - "Microsoft.Windows.Photos"
+    - "Microsoft.WindowsAlarms"
+    - "Microsoft.WindowsCamera"
+    - "Microsoft.WindowsCalculator"
+    - "microsoft.windowscommunicationsapps"
+    - "Microsoft.WindowsFeedbackHub"
+    - "Microsoft.WindowsMaps"
+    - "Microsoft.WindowsPhone"
+    - "Microsoft.WindowsSoundRecorder"
+    # - "Microsoft.WindowsStore"
+    - "Microsoft.Xbox.TCUI"
+    - "Microsoft.XboxApp"
+    - "Microsoft.XboxGameOverlay"
+    - "Microsoft.XboxGamingOverlay"
+    - "Microsoft.XboxIdentityProvider"
+    - "Microsoft.XboxSpeechToTextOverlay"
+    - "Microsoft.YourPhone"
+    - "Microsoft.ZuneMusic"
+    - "Microsoft.ZuneVideo"
+    - "Microsoft.CommsPhone"
+    - "Microsoft.ConnectivityStore"
+    - "Microsoft.GetHelp"
+    - "Microsoft.Getstarted"
+    - "Microsoft.Messaging"
+    - "Microsoft.Office.Sway"
+    - "Microsoft.OneConnect"
+    - "Microsoft.WindowsFeedbackHub"
+    - "Microsoft.Microsoft3DViewer"
+    - "Microsoft.BingFoodAndDrink"
+    - "Microsoft.BingHealthAndFitness"
+    - "Microsoft.BingTravel"
+    - "Microsoft.WindowsReadingList"
+    - "Microsoft.MixedReality.Portal"
+    - "Microsoft.ScreenSketch"
+    - "Microsoft.XboxGamingOverlay"
+    - "Microsoft.GamingApp"
+    - "Microsoft.PowerAutomateDesktop"
+    - "MicrosoftTeams"
+    - "Microsoft.Todos"
+    - "2FE3CB00.PicsArt-PhotoStudio"
+    - "46928bounde.EclipseManager"
+    - "4DF9E0F8.Netflix"
+    - "613EBCEA.PolarrPhotoEditorAcademicEdition"
+    - "6Wunderkinder.Wunderlist"
+    - "7EE7776C.LinkedInforWindows"
+    - "89006A2E.AutodeskSketchBook"
+    - "9E2F88E3.Twitter"
+    - "A278AB0D.DisneyMagicKingdoms"
+    - "A278AB0D.MarchofEmpires"
+    - "ActiproSoftwareLLC.562882FEEB491"
+    - "CAF9E577.Plex"
+    - "ClearChannelRadioDigital.iHeartRadio"
+    - "D52A8D61.FarmVille2CountryEscape"
+    - "D5EA27B7.Duolingo-LearnLanguagesforFree"
+    - "DB6EA5DB.CyberLinkMediaSuiteEssentials"
+    - "DolbyLaboratories.DolbyAccess"
+    - "Drawboard.DrawboardPDF"
+    - "Facebook.Facebook"
+    - "Fitbit.FitbitCoach"
+    - "Flipboard.Flipboard"
+    - "GAMELOFTSA.Asphalt8Airborne"
+    - "KeeperSecurityInc.Keeper"
+    - "NORDCURRENT.COOKINGFEVER"
+    - "PandoraMediaInc.29680B314EFC2"
+    - "Playtika.CaesarsSlotsFreeCasino"
+    - "ShazamEntertainmentLtd.Shazam"
+    - "SlingTVLLC.SlingTV"
+    - "SpotifyAB.SpotifyMusic"
+    - "TheNewYorkTimes.NYTCrossword"
+    - "ThumbmunkeysLtd.PhototasticCollage"
+    - "TuneIn.TuneInRadio"
+    - "WinZipComputing.WinZipUniversal"
+    - "XINGAG.XING"
+    - "flaregamesGmbH.RoyalRevolt2"
+    - "king.com.*"
+    - "king.com.BubbleWitch3Saga"
+    - "king.com.CandyCrushSaga"
+    - "king.com.CandyCrushSodaSaga"
+    - "Microsoft.Advertising.Xaml"
+  loop_control:
+    loop_var: item
+  become: true
+
+- name: Add registry key to disable Windows Copilot
+  ansible.windows.win_regedit:
+    path: HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot
+    name: TurnOffWindowsCopilot
+    value: 1
+    type: dword
+    state: present
+
+
+# - name: Get full names of Windows Capabilities to remove
+#   ansible.windows.win_shell: |
+#     Get-WindowsCapability -Online -Name "{{ capability }}" | `
+#     ForEach-Object { Write-Host $_.Name }
+#   loop: "{{ remove_windows_capabilities | sort }}"
+#   loop_control:
+#     loop_var: capability
+#   register: feature_info
+
+# - name: Remove Windows Capabilities
+#   ansible.windows.win_shell: |
+#     Remove-WindowsCapability -Online -Name "{{ capability | trim }}"
+#   loop: "{{ feature_info.results | map(attribute='stdout') }}"
+#   loop_control:
+#     loop_var: capability
+
+# - name: Remove Windows optional features
+#   ansible.windows.win_optional_feature:
+#     state: absent
+#     name: "{{ remove_windows_optional_features | sort }}"
+#   register: result
+#   failed_when: false
+
+- name: Disable reinstallation of default apps
+  ansible.windows.win_regedit:
+    path: HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager
+    value: "{{ key }}"
+    data: 0
+    type: dword
+  loop:
+    - ContentDeliveryAllowed
+    - FeatureManagementEnabled
+    - OemPreInstalledAppsEnabled
+    - PreInstalledAppsEnabled
+    - PreInstalledAppsEverEnabled
+    - SilentInstalledAppsEnabled
+    - SubscribedContent-314559Enabled
+    - SubscribedContent-338387Enabled
+    - SubscribedContent-338388Enabled
+    - SubscribedContent-338389Enabled
+    - SubscribedContent-338393Enabled
+    - SubscribedContentEnabled
+    - SystemPaneSuggestionsEnabled
+  loop_control:
+    loop_var: key
+
+- name: Disable "Suggested Applications"
+  ansible.windows.win_regedit:
+    path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent
+    value: DisableWindowsConsumerFeatures
+    data: 1
+    type: dword

@@ -1,0 +1,201 @@
+---
+- name: Disable Clipboard History
+  win_regedit:
+      path: "HKCU:\\SOFTWARE\\Microsoft\\Clipboard"
+      name: ClipboardHistoryEnabled
+      data: 0
+      type: dword
+
+- name: Disable Cortana
+  win_regedit:
+      path: "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search"
+      name: AllowCortana
+      data: 0
+      type: dword
+
+- name: Configure Windows Spotlight Features - ConfigureWindowsSpotlight
+  win_regedit:
+      path: "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+      name: "ConfigureWindowsSpotlight"
+      data: 2
+      type: dword
+
+- name: Configure Windows Spotlight Features - IncludeEnterpriseSpotlight
+  win_regedit:
+      path: "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+      name: "IncludeEnterpriseSpotlight"
+      data: 0
+      type: dword
+
+- name: Configure Windows Spotlight Features - DisableWindowsSpotlightFeatures
+  win_regedit:
+      path: "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+      name: "DisableWindowsSpotlightFeatures"
+      data: 1
+      type: dword
+
+- name: Configure Windows Spotlight Features - DisableWindowsSpotlightOnActionCenter
+  win_regedit:
+      path: "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+      name: "DisableWindowsSpotlightOnActionCenter"
+      data: 1
+      type: dword
+
+- name: Configure Windows Spotlight Features - DisableWindowsSpotlightOnSettings
+  win_regedit:
+      path: "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+      name: "DisableWindowsSpotlightOnSettings"
+      data: 1
+      type: dword
+
+- name: Configure Windows Spotlight Features - DisableWindowsSpotlightWindowsWelcomeExperience
+  win_regedit:
+      path: "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+      name: "DisableWindowsSpotlightWindowsWelcomeExperience"
+      data: 1
+      type: dword
+
+- name: Disable Tailored Experiences - TailoredExperiencesWithDiagnosticDataEnabled
+  win_regedit:
+      path: "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Privacy"
+      name: "TailoredExperiencesWithDiagnosticDataEnabled"
+      data: 0
+      type: dword
+
+- name: Disable Tailored Experiences - DisableTailoredExperiencesWithDiagnosticData
+  win_regedit:
+      path: "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+      name: "DisableTailoredExperiencesWithDiagnosticData"
+      data: 1
+      type: dword
+
+- name: Disable Third Party Suggestions - DisableThirdPartySuggestions
+  win_regedit:
+      path: "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+      name: "DisableThirdPartySuggestions"
+      data: 1
+      type: dword
+
+- name: Disable Third Party Suggestions - DisableWindowsConsumerFeatures
+  win_regedit:
+      path: "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+      name: "DisableWindowsConsumerFeatures"
+      data: 1
+      type: dword
+
+- name: Enable Windows Update to search Drivers
+  win_regedit:
+      path: "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching"
+      name: "SearchOrderConfig"
+      data: 1
+      type: dword
+
+- name: Disable some startup event traces (AutoLoggers) - AutoLogger-Diagtrack-Listener
+  win_regedit:
+      path: "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Diagnostics\\AutoLogger\\AutoLogger-Diagtrack-Listener"
+      name: "Start"
+      data: 0
+      type: dword
+
+- name: Disable some startup event traces (AutoLoggers) - SQMLogger
+  win_regedit:
+      path: "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Diagnostics\\AutoLogger\\SQMLogger"
+      name: "Start"
+      data: 0
+      type: dword
+
+
+
+- name: Enable default firewall profiles
+  win_shell: |
+    Set-NetFirewallProfile -Profile Domain, Public, Private -Enabled True
+  args:
+    executable: powershell.exe
+
+- name: Ensure Windows Defender is ENABLED
+  win_regedit:
+    path: HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender
+    name: DisableAntiSpyware
+    data: 0
+    type: dword
+
+- name: Enable Microsoft Defender Exploit Guard network protection
+  win_shell: |
+    Set-MpPreference -EnableNetworkProtection Enabled -Force
+  args:
+    executable: powershell.exe
+
+- name: Enable detection for potentially unwanted applications and block them
+  win_shell: |
+    Set-MpPreference -PUAProtection Enabled -Force
+  args:
+    executable: powershell.exe
+
+- name: Enable 'SmartScreen' for Microsoft Edge
+  win_regedit:
+    path: HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter
+    name: EnabledV9
+    data: 1
+    type: dword
+
+- name: Enable 'SmartScreen' for Store Apps
+  win_regedit:
+    path: HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppHost
+    name: EnableWebContentEvaluation
+    data: 1
+    type: dword
+
+- name: Disable SMB 1.0 protocol
+  win_shell: |
+    Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force
+  args:
+    executable: powershell.exe
+
+- name: Enable .NET strong cryptography
+  win_regedit:
+    path: HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319
+    name: SchUseStrongCrypto
+    data: 1
+    type: dword
+
+- name: Enable .NET strong cryptography for 64-bit
+  win_regedit:
+    path: HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319
+    name: SchUseStrongCrypto
+    data: 1
+    type: dword
+
+- name: Disable Autoplay
+  win_regedit:
+    path: HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\AutoplayHandlers
+    name: DisableAutoplay
+    data: 1
+    type: dword
+
+- name: Disable Autorun for all Drives
+  win_regedit:
+    path: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer
+    name: NoDriveTypeAutoRun
+    data: 255
+    type: dword
+
+- name: Enable Show file extensions in Explorer
+  win_regedit:
+    path: HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    name: HideFileExt
+    data: 0
+    type: dword
+
+- name: Raising UAC level
+  win_regedit:
+    path: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+    name: ConsentPromptBehaviorAdmin
+    data: 5
+    type: dword
+
+- name: Enable offer Malicious Software Removal Tool via Windows Update
+  win_regedit:
+    path: HKLM:\SOFTWARE\Policies\Microsoft\MRT
+    name: DontOfferThroughWUAU
+    data: 0
+    type: dword

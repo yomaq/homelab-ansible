@@ -1,0 +1,73 @@
+---
+- name: Stop all Edge processes if running
+  ansible.windows.win_shell: |
+      $edgeProcess = Get-Process -Name msedge -ErrorAction SilentlyContinue
+      if ($edgeProcess) {
+        Stop-Process -Name msedge -Force
+      }
+      exit 0
+  ignore_errors: yes
+
+
+
+- name: Remove edge
+  ansible.windows.win_package:
+    provider: msix
+    product_id: "MSEdge"
+    state: absent
+
+- name: Uninstall Edge using setup.exe
+  ansible.windows.win_shell: |
+    $edgePaths = @("C:\Program Files (x86)\Microsoft\Edge\Application", "C:\Program Files (x86)\Microsoft\EdgeCore")
+    foreach ($path in $edgePaths) {
+      if (Test-Path -Path "$path\*\Installer\setup.exe") {
+        Start-Process -FilePath "$path\*\Installer\setup.exe" -ArgumentList "--uninstall", "--system-level", "--verbose-logging", "--force-uninstall" -Wait
+      }
+    }
+  ignore_errors: yes
+
+# - name: Remove UWP apps related to Edge
+#   ansible.windows.win_package:
+#     name: "Microsoft.MicrosoftEdge, Microsoft.MicrosoftEdge.Stable, Microsoft.MicrosoftEdge.*, Microsoft.MicrosoftEdgeDevToolsClient"
+#     state: absent
+
+- name: Disable Edge update tasks
+  community.windows.win_scheduled_task:
+    name: "MicrosoftEdgeUpdateTaskMachineCore, MicrosoftEdgeUpdateTaskMachineUA"
+    state: absent
+
+
+- name: Gather information about Edge services
+  ansible.windows.win_service_info:
+    name: "edgeupdate, edgeupdatem, MicrosoftEdgeElevationService"
+  register: edge_services_info
+
+- name: Disable Edge services if they exist
+  ansible.windows.win_service:
+    name: "{{ item.name }}"
+    state: stopped
+    start_mode: disabled
+  loop: "{{ edge_services_info.services }}"
+  when: item.exists
+
+
+- name: Prevent Edge from reinstalling
+  ansible.windows.win_regedit:
+    path: HKLM:\SOFTWARE\Microsoft\EdgeUpdate
+    name: DoNotUpdateToEdgeWithChromium
+    data: 1
+    type: dword
+
+- name: Delete Edge app data and installation directories
+  ansible.windows.win_file:
+      path: "{{ item }}"
+      state: absent
+  loop:
+      - "C:\\Program Files (x86)\\Microsoft\\Edge"
+      - "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate"
+      - "C:\\Program Files (x86)\\Microsoft\\Temp"
+  ignore_errors: yes
+- name: Delete Edge app data directory with wildcard
+  ansible.windows.win_shell: |
+    Get-ChildItem -Path "C:\\Users\\{{ ansible_user }}\\AppData\\Local\\Packages\\Microsoft.MicrosoftEdge*" -Recurse -Force | Remove-Item -Recurse -Force
+  ignore_errors: yes

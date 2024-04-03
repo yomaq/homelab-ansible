@@ -1,0 +1,116 @@
+---
+- name: Enable Hardware Accelerated GPU Scheduling
+  win_regedit:
+    path: HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers
+    name: HwSchMode
+    data: 2
+    type: dword
+
+- name: Disable Remote Assistance
+  win_regedit:
+    path: HKLM:\SYSTEM\CurrentControlSet\Control\Remote Assistance
+    name: fAllowToGetHelp
+    data: 0
+    type: dword
+
+- name: Disable Ndu High RAM Usage
+  win_regedit:
+    path: HKLM:\SYSTEM\ControlSet001\Services\Ndu
+    name: Start
+    data: 4
+    type: dword
+
+- name: Set SVCHost to match installed RAM size
+  win_shell: |
+    $RamInKB = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1KB
+    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "SvcHostSplitThresholdInKB" -Type DWord -Value $RamInKB
+  args:
+    executable: powershell.exe
+
+- name: Enable Windows Store apps Automatic Updates
+  win_regedit:
+    path: HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore
+    name: AutoDownload
+    data: 2
+    type: dword
+    state: present
+
+- name: Set Power Plan to High Performance
+  win_shell: powercfg -SetActive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
+  args:
+    executable: cmd.exe
+
+- name: Unlimiting network bandwidth for all system
+  win_regedit:
+    path: HKLM:\SOFTWARE\Policies\Microsoft\Psched
+    name: NonBestEffortLimit
+    data: 0
+    type: dword
+
+- name: Reduce Time to services app timeout to 2s for all users
+  win_regedit:
+    path: HKLM:\SYSTEM\CurrentControlSet\Control
+    name: WaitToKillServiceTimeout
+    data: 2000
+    type: dword
+
+- name: Reduce mouse hover time events to 10ms
+  win_regedit:
+    path: HKCU:\Control Panel\Mouse
+    name: MouseHoverTime
+    data: 1000
+    type: string
+
+- name: Reduce mouse and keyboard hooks timeout to 1s
+  win_regedit:
+    path: HKCU:\Control Panel\Desktop
+    name: LowLevelHooksTimeout
+    data: 1000
+    type: dword
+
+- name: Reduce animation speed delay to 1ms on Windows 11
+  win_regedit:
+    path: HKCU:\Control Panel\Desktop
+    name: MenuShowDelay
+    data: 1
+    type: dword
+
+- name: Reduce Time to kill apps timeout to 5s
+  win_regedit:
+    path: HKCU:\Control Panel\Desktop
+    name: WaitToKillAppTimeout
+    data: 5000
+    type: dword
+
+- name: Enable game mode
+  win_regedit:
+    path: HKCU:\SOFTWARE\Microsoft\GameBar
+    name: AllowAutoGameMode
+    data: 1
+    type: dword
+
+- name: Reserve 100% of CPU to Multimedia/Gaming tasks
+  win_regedit:
+    path: HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile
+    name: SystemResponsiveness
+    data: 0
+    type: dword
+
+- name: Dedicate more CPU/GPU usage to Gaming tasks 1
+  win_regedit:
+    path: HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games
+    name: GPU Priority
+    data: 8
+    type: dword
+- name: Dedicate more CPU/GPU usage to Gaming tasks 2
+  win_regedit:
+    path: HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games
+    name: Priority
+    data: 6
+    type: dword
+- name: Dedicate more CPU/GPU usage to Gaming tasks 3
+  win_regedit:
+    path: HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games
+    name: Scheduling Category
+    data: High
+    type: string

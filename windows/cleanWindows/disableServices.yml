@@ -1,0 +1,74 @@
+---
+- name: Check if services exist
+  ansible.windows.win_service_info:
+      name: "{{ item }}"
+  loop:
+      - DiagTrack
+      - diagnosticshub.standardcollector.service
+      - dmwappushservice
+      - Fax
+      - fhsvc
+      - GraphicsPerfSvc
+      - HomeGroupListener
+      - HomeGroupProvider
+      - lfsvc
+      - MapsBroker
+      - PcaSvc
+      - RemoteAccess
+      - RemoteRegistry
+      - RetailDemo
+      - SysMain
+      - TrkWks
+      - WSearch
+  register: service_info
+
+- name: Disable services if they exist
+  win_service:
+      name: "{{ item.item }}"
+      state: stopped
+      start_mode: disabled
+  loop: "{{ service_info.results }}"
+  when: item.exists
+
+
+- name: Check if services exist for manual start mode
+  ansible.windows.win_service_info:
+      name: "{{ item }}"
+  loop:
+      - BITS
+      - edgeupdate
+      - edgeupdatem
+      - FontCache
+      - PhoneSvc
+      - SCardSvr
+      - stisvc
+      - WbioSrvc
+      - wisvc
+      - WMPNetworkSvc
+      - WpnService
+      - BTAGService
+      - BthAvctpSvc
+      - bthserv
+      - RtkBtManServ
+      - DPS
+      - WdiServiceHost
+      - WdiSystemHost
+      - lmhosts
+      - SharedAccess
+      - Wecsvc
+      - WerSvc
+      - XblAuthManager
+      - XblGameSave
+      - XboxGipSvc
+      - XboxNetApiSvc
+      - gupdate
+      - gupdatem
+  register: service_info_manual
+
+- name: Set services to manual if they exist
+  win_service:
+      name: "{{ item.item }}"
+      state: stopped
+      start_mode: manual
+  loop: "{{ service_info_manual.results }}"
+  when: item.exists
