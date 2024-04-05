@@ -4,23 +4,23 @@
   tasks:
   - name: general setup
     ansible.builtin.include_tasks: windows/setup/basics.yml
-  - name: Setup UI
-    ansible.builtin.include_tasks: windows/cleanWindows/setupUI.yml
-  - name: Setup privacy
-    ansible.builtin.include_tasks: windows/cleanWindows/setupPrivacy.yml
-  - name: Disable telemetry
-    ansible.builtin.include_tasks: windows/cleanWindows/disableTelemetry.yml
-  - name: Remove OneDrive
-    ansible.builtin.include_tasks: windows/cleanWindows/onedrive.yml
-  - name: Remove default apps
-    ansible.builtin.include_tasks: windows/cleanWindows/removedefaultapps.yml
-  - name: setup security
-    ansible.builtin.include_tasks: windows/cleanWindows/setupSecurity.yml
-  - name: Remove Microsoft Edge
-    ansible.builtin.include_tasks: windows/cleanWindows/msedge.yml
-  - name: performance
-    ansible.builtin.include_tasks: windows/cleanWindows/performance.yml
-  - name: Disable unnecessary services
-    ansible.builtin.include_tasks: windows/cleanWindows/disableServices.yml
-  - name: Disable unnecessary tasks
-    ansible.builtin.include_tasks: windows/cleanWindows/disableTasks.yml
+  # - name: Setup UI
+  #   ansible.builtin.include_tasks: windows/cleanWindows/setupUI.yml
+  # - name: Setup privacy
+  #   ansible.builtin.include_tasks: windows/cleanWindows/setupPrivacy.yml
+  # - name: Disable telemetry
+  #   ansible.builtin.include_tasks: windows/cleanWindows/disableTelemetry.yml
+  # - name: Remove OneDrive
+  #   ansible.builtin.include_tasks: windows/cleanWindows/onedrive.yml
+  # - name: Remove default apps
+  #   ansible.builtin.include_tasks: windows/cleanWindows/removedefaultapps.yml
+  # - name: setup security
+  #   ansible.builtin.include_tasks: windows/cleanWindows/setupSecurity.yml
+  # - name: Remove Microsoft Edge
+  #   ansible.builtin.include_tasks: windows/cleanWindows/msedge.yml
+  # - name: performance
+  #   ansible.builtin.include_tasks: windows/cleanWindows/performance.yml
+  # - name: Disable unnecessary services
+  #   ansible.builtin.include_tasks: windows/cleanWindows/disableServices.yml
+  # - name: Disable unnecessary tasks
+  #   ansible.builtin.include_tasks: windows/cleanWindows/disableTasks.yml

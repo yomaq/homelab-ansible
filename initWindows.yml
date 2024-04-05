@@ -1,0 +1,7 @@
+- hosts: windows
+  vars_files:
+    - variables/initWindowsVars.yml
+  tasks:
+  - name: general setup
+    ansible.builtin.include_tasks: windows/init.yml
+

@@ -1,33 +1,9 @@
 ---
-
 - name: Add new internal source
   win_chocolatey_source:
     name: internal repo
     state: present
     source: https://chocolatey.org/api/v2/
-- name: Uninstall Chocolatey
-  win_chocolatey:
-    name: brave
-    state: absent
-- name: Upgrade installed packages
-  win_chocolatey:
-    name: all
-    state: latest
-- name: Install Chocolatey
-  win_chocolatey:
-    name: 
-    - vscode
-    - gsudo
-    - steam
-    - firefox
-    - sunshine
-    state: present
-- name: Install all security, critical, and rollup updates without a scheduled task
-  win_updates:
-    category_names:
-      - SecurityUpdates
-      - CriticalUpdates
-      - UpdateRollups
 - name: Remove SSH rule
   community.windows.win_firewall_rule:
     name: OpenSSH SSH Server (sshd)
@@ -35,7 +11,6 @@
     direction: in
     protocol: 22
     state: absent
-
 - name: set the default shell to PowerShell
   win_regedit:
     path: HKLM:\SOFTWARE\OpenSSH
